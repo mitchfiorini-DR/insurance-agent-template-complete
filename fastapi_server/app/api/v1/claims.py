@@ -9,6 +9,7 @@ from typing import Any
 
 import datarobot as dr
 import httpx
+import pandas as pd
 import httpx_sse
 from datarobot.models.dataset import Dataset
 from datarobot_predict.deployment import predict
@@ -254,7 +255,7 @@ def _score_fraud_sync(records: list[dict[str, Any]]) -> dict[str, float]:
     scores: dict[str, float] = {}
     try:
         fraud_dep = dr.Deployment.get(FRAUD_DEPLOYMENT_ID)
-        fraud_result = predict(fraud_dep, records)
+        fraud_result = predict(fraud_dep, pd.DataFrame(records))
         if hasattr(fraud_result, "dataframe"):
             fr_df = fraud_result.dataframe
             for i, row in enumerate(records):
@@ -285,7 +286,7 @@ def _score_anomaly_sync(records: list[dict[str, Any]]) -> dict[str, float]:
     scores: dict[str, float] = {}
     try:
         anomaly_dep = dr.Deployment.get(ANOMALY_DEPLOYMENT_ID)
-        anomaly_result = predict(anomaly_dep, records)
+        anomaly_result = predict(anomaly_dep, pd.DataFrame(records))
         if hasattr(anomaly_result, "dataframe"):
             an_df = anomaly_result.dataframe
             for i, row in enumerate(records):
@@ -318,7 +319,7 @@ def _score_damage_sync(records: list[dict[str, Any]]) -> dict[str, str]:
     damage_labels = ["minor", "moderate", "severe", "total_loss", "unknown"]
     try:
         damage_dep = dr.Deployment.get(DAMAGE_DEPLOYMENT_ID)
-        damage_result = predict(damage_dep, records)
+        damage_result = predict(damage_dep, pd.DataFrame(records))
         if hasattr(damage_result, "dataframe"):
             dm_df = damage_result.dataframe
             pred_col = [c for c in dm_df.columns if "prediction" in c.lower() and "PREDICTION" in c]

@@ -61,7 +61,7 @@ function ScoreBar({ value, max, color }: { value: number; max: number; color: st
       <div className="flex-1 h-1.5 bg-gray-700 rounded-full overflow-hidden">
         <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-xs text-gray-300 w-12 text-right font-mono">{value.toFixed(1)}</span>
+      <span className="text-xs text-gray-300 w-12 text-right font-mono">{value < 10 ? value.toFixed(3) : value.toFixed(1)}</span>
     </div>
   );
 }

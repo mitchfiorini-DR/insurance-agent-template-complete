@@ -264,10 +264,7 @@ function ChatMessageContent({
           <span className="mn-label capitalize">{role}</span>
         </div>
         <div
-          className={`
-            overflow-hidden body text-wrap break-words
-            [line-break:anywhere]
-          `}
+          className="overflow-hidden body text-wrap break-words"
         >
           {content.parts.map((part, i) => (
             <UniversalContentPart key={i} part={part} />

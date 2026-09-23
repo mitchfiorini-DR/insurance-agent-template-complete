@@ -4,6 +4,7 @@ from typing import Any
 
 import datarobot as dr
 import litellm
+import pandas as pd
 from datarobot.models.dataset import Dataset
 from datarobot_genai.core.agents import make_system_prompt
 from datarobot_genai.langgraph.agent import datarobot_agent_class_from_langgraph
@@ -175,7 +176,7 @@ def score_all_claims() -> str:
 
     try:
         fraud_dep = dr.Deployment.get(FRAUD_DEPLOYMENT_ID)
-        fr = predict(fraud_dep, records)
+        fr = predict(fraud_dep, pd.DataFrame(records))
         if hasattr(fr, "dataframe"):
             fr_df = fr.dataframe
             for i in range(len(records)):
@@ -187,7 +188,7 @@ def score_all_claims() -> str:
 
     try:
         anomaly_dep = dr.Deployment.get(ANOMALY_DEPLOYMENT_ID)
-        an = predict(anomaly_dep, records)
+        an = predict(anomaly_dep, pd.DataFrame(records))
         if hasattr(an, "dataframe"):
             an_df = an.dataframe
             cols = [
@@ -232,7 +233,7 @@ def analyze_claim(claim_id: str) -> str:
     fraud_source = "default"
     try:
         fraud_dep = dr.Deployment.get(FRAUD_DEPLOYMENT_ID)
-        fr = predict(fraud_dep, [record])
+        fr = predict(fraud_dep, pd.DataFrame([record]))
         if hasattr(fr, "dataframe"):
             pv = fr.dataframe.iloc[0].get("FRAUD_FLAG_1_PREDICTION", None)
             if pv is not None:
@@ -254,7 +255,7 @@ def analyze_claim(claim_id: str) -> str:
     anomaly_source = "default"
     try:
         anomaly_dep = dr.Deployment.get(ANOMALY_DEPLOYMENT_ID)
-        an = predict(anomaly_dep, [record])
+        an = predict(anomaly_dep, pd.DataFrame([record]))
         if hasattr(an, "dataframe"):
             cols = [c for c in an.dataframe.columns if "anomaly" in c.lower() or "prediction" in c.lower()]
             if cols:
@@ -275,7 +276,7 @@ def analyze_claim(claim_id: str) -> str:
     damage_source = "dataset field"
     try:
         damage_dep = dr.Deployment.get(DAMAGE_DEPLOYMENT_ID)
-        dm = predict(damage_dep, [record])
+        dm = predict(damage_dep, pd.DataFrame([record]))
         classes = ["minor", "moderate", "severe", "total_loss", "unknown"]
         if hasattr(dm, "dataframe"):
             dm_df = dm.dataframe
